@@ -18,6 +18,8 @@ function setup() {
 
 function videoReady() {
   select("#videoStatus").html("Video is ready!");
+  console.log("Video is ready!");
+  classify();
 }
 
 function modelReady() {
@@ -25,31 +27,26 @@ function modelReady() {
   classifier.load("model.json", customModelReady);
 }
 
-function setupButtons() {
-  captureButton = select("#captureButton");
-  captureButton.mousePressed(function() {
-    let label = select("#label").value();
-    classifier.addImage(label);
-    console.log("captured", label);
-  });
-
-  trainButton = select("#train");
-  trainButton.mousePressed(train);
-
-  saveButton = select("#save");
-  saveButton.mousePressed(save);
-
-  loadButton = select("#loadModel");
-  loadButton.mousePressed(loadModel);
-}
-
 function customModelReady() {
   console.log("Custom Model is ready!");
   classify();
 }
 
-function save() {
-  classifier.save();
+function setupButtons() {
+  captureButton = select("#captureButton");
+  captureButton.mousePressed(capture);
+
+  trainButton = select("#train");
+  trainButton.mousePressed(train);
+
+  saveButton = select("#save");
+  saveButton.mousePressed(saveModel);
+}
+
+function capture() {
+  let label = select("#label").value();
+  classifier.addImage(label);
+  console.log("captured", label);
 }
 
 function train() {
@@ -63,6 +60,11 @@ function train() {
     }
   });
 }
+
+function saveModel() {
+  classifier.save();
+}
+
 function classify() {
   classifier.classify(gotResults);
 }
@@ -70,9 +72,10 @@ function classify() {
 function gotResults(err, results) {
   if (err) {
     console.error(err);
+  } else {
+    select("#result").html(results);
+    classify();
   }
-
-  select("#result").html(results);
-  classify();
 }
+
 setup();
